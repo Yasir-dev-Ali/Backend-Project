@@ -35,4 +35,38 @@ const userRegister = async (req, res) => {
     }
 };
 
-export { userRegister };
+// Login controller
+const userLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Validate input fields
+        if (!email || !password) {   
+            return res.status(422).json({ error: "Please fill all fields" });
+        }
+
+        // Find the user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Compare the provided password with the stored hashed password
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: "Invalid credentials" });
+        }
+
+        res.status(200).json({ message: "Login successful" });
+
+    } catch (error) {
+        console.error("Error logging in:", error);
+        res.status(500).json({ error: "An error occurred during login" });
+    }
+}
+
+//
+
+
+
+export { userRegister ,userLogin};
